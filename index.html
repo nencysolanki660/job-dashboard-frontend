@@ -1,0 +1,39 @@
+<h2>Job Dashboard</h2>
+<a href="create.html">Add Job</a>
+
+<table border="1">
+<thead>
+<tr>
+<th>Title</th><th>Type</th><th>Status</th><th>Apps</th><th>Action</th>
+</tr>
+</thead>
+<tbody id="jobs"></tbody>
+</table>
+
+<script>
+fetch('http://localhost/job-dashboard-backend/public/api/jobs')
+.then(res => res.json())
+.then(data => {
+  let html = '';
+  data.forEach(j => {
+    html += `
+    <tr>
+      <td>${j.title}</td>
+      <td>${j.type}</td>
+      <td>${j.status}</td>
+      <td>${j.applications}</td>
+      <td>
+        <a href="edit.html?id=${j.id}">Edit</a>
+        <button onclick="deleteJob(${j.id})">Delete</button>
+      </td>
+    </tr>`;
+  });
+  document.getElementById('jobs').innerHTML = html;
+});
+
+function deleteJob(id){
+  fetch(`http://localhost/job-dashboard-backend/public/api/jobs/${id}`, {
+    method:'DELETE'
+  }).then(()=>location.reload());
+}
+</script>

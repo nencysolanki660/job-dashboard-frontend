@@ -1,0 +1,41 @@
+<h2>Edit Job</h2>
+<form id="jobForm">
+<input id="title"><br><br>
+<select id="type"></select><br><br>
+<select id="status"></select><br><br>
+<input id="applications"><br><br>
+<input id="duration"><br><br>
+<textarea id="description"></textarea><br><br>
+<button>Update</button>
+</form>
+
+<script>
+const id = new URLSearchParams(window.location.search).get('id');
+
+fetch(`http://localhost/job-dashboard-backend/public/api/jobs/${id}`)
+.then(res=>res.json())
+.then(j=>{
+  title.value=j.title;
+  type.innerHTML=`<option>${j.type}</option>`;
+  status.innerHTML=`<option>${j.status}</option>`;
+  applications.value=j.applications;
+  duration.value=j.duration;
+  description.value=j.description;
+});
+
+jobForm.onsubmit = e =>{
+  e.preventDefault();
+  fetch(`http://localhost/job-dashboard-backend/public/api/jobs/${id}`,{
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      title:title.value,
+      type:type.value,
+      status:status.value,
+      applications:applications.value,
+      duration:duration.value,
+      description:description.value
+    })
+  }).then(()=>location='index.html');
+}
+</script>

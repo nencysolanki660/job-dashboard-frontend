@@ -1,0 +1,43 @@
+<h2>Create Job</h2>
+
+<form id="jobForm">
+<input placeholder="Title" id="title"><br><br>
+
+<select id="type">
+<option>Full Time</option>
+<option>Part Time</option>
+<option>Internship</option>
+</select><br><br>
+
+<select id="status">
+<option>Active</option>
+<option>Expired</option>
+<option>Draft</option>
+</select><br><br>
+
+<input placeholder="Applications" id="applications"><br><br>
+<input placeholder="Duration" id="duration"><br><br>
+
+<textarea placeholder="Description" id="description"></textarea><br><br>
+
+<button type="submit">Save</button>
+</form>
+
+<script>
+document.getElementById('jobForm').onsubmit = function(e){
+  e.preventDefault();
+
+  fetch('http://localhost/job-dashboard-backend/public/api/jobs', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      title: title.value,
+      type: type.value,
+      status: status.value,
+      applications: applications.value,
+      duration: duration.value,
+      description: description.value
+    })
+  }).then(()=>window.location='index.html');
+}
+</script>
