@@ -9,9 +9,10 @@
 </thead>
 <tbody id="jobs"></tbody>
 </table>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <script>
-fetch('http://localhost/job-dashboard-backend/public/api/jobs')
+fetch('http://127.0.0.1:8000/api/jobs')
 .then(res => res.json())
 .then(data => {
   let html = '';
@@ -31,9 +32,17 @@ fetch('http://localhost/job-dashboard-backend/public/api/jobs')
   document.getElementById('jobs').innerHTML = html;
 });
 
+const apiUrl = 'http://localhost/job-dashboard-backend/public/api/jobs';
+
 function deleteJob(id){
-  fetch(`http://localhost/job-dashboard-backend/public/api/jobs/${id}`, {
-    method:'DELETE'
-  }).then(()=>location.reload());
+  if(confirm("Are you sure you want to delete this job?")) {
+    fetch(`${apiUrl}/${id}`, { method:'DELETE' })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message); 
+        location.reload();
+    })
+    .catch(err => console.log(err));
+  }
 }
 </script>

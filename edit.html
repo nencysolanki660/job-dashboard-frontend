@@ -1,41 +1,104 @@
 <h2>Edit Job</h2>
+
 <form id="jobForm">
-<input id="title"><br><br>
-<select id="type"></select><br><br>
-<select id="status"></select><br><br>
-<input id="applications"><br><br>
-<input id="duration"><br><br>
-<textarea id="description"></textarea><br><br>
-<button>Update</button>
+  <input id="title" placeholder="Job Title"><br><br>
+
+  <select id="type">
+    <option value="Full Time">Full Time</option>
+    <option value="Part Time">Part Time</option>
+    <option value="Internship">Internship</option>
+  </select><br><br>
+
+  <select id="status">
+    <option value="Active">Active</option>
+    <option value="Expired">Expired</option>
+    <option value="Draft">Draft</option>
+  </select><br><br>
+
+  <input type="number" id="applications" placeholder="Applications"><br><br>
+  <input id="duration" placeholder="Duration"><br><br>
+  <textarea id="description" placeholder="Description"></textarea><br><br>
+
+  <button type="submit">Update</button>
+  <a href="index.html">Cancel</a>
 </form>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
+const apiUrl = `http://localhost/job-dashboard-backend/public/api/jobs/${id}`;
 
-fetch(`http://localhost/job-dashboard-backend/public/api/jobs/${id}`)
-.then(res=>res.json())
-.then(j=>{
-  title.value=j.title;
-  type.innerHTML=`<option>${j.type}</option>`;
-  status.innerHTML=`<option>${j.status}</option>`;
-  applications.value=j.applications;
-  duration.value=j.duration;
-  description.value=j.description;
-});
+fetch(apiUrl)
+.then(res => res.json())
+.then(job => {
+   
+    document.getElementById('title').value = job.title;
+    document.getElementById('applications').value = job.applications;
+    document.getElementById('duration').value = job.duration;
+    document.getElementById('description').value = job.description;
 
-jobForm.onsubmit = e =>{
-  e.preventDefault();
-  fetch(`http://localhost/job-dashboard-backend/public/api/jobs/${id}`,{
-    method:'PUT',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      title:title.value,
-      type:type.value,
-      status:status.value,
-      applications:applications.value,
-      duration:duration.value,
-      description:description.value
+  
+    document.getElementById('type').value = job.type;
+    document.getElementById('status').value = job.status; 
+})
+.catch(err => console.log(err));
+
+
+document.getElementById('jobForm').onsubmit = e => {
+    e.preventDefault();
+
+
+       const titleVal = title.value.trim();
+    const typeVal = type.value;
+    const statusVal = document.getElementById('status').value;
+    const appsVal = applications.value;
+    const durationVal = duration.value.trim();
+    const descVal = description.value.trim();
+
+
+    if (titleVal === '') {
+      alert('Job title is required');
+      return;
+    }
+
+    if (typeVal === '') {
+      alert('Please select job type');
+      return;
+    }
+
+    if (statusVal === '') {
+      alert('Please select job status');
+      return;
+    }
+
+    if (appsVal === '' || isNaN(appsVal) || parseInt(appsVal) < 0) {
+      alert('Applications must be a valid number');
+      return;
+    }
+
+    if (durationVal === '') {
+      alert('Duration is required');
+      return;
+    }
+
+
+    fetch(apiUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            title: titleVal,
+            type: typeVal,
+            status: statusVal,
+            applications: appsVal,
+            duration: durationVal,
+            description: document.getElementById('description').value
+        })
     })
-  }).then(()=>location='index.html');
+    .then(res => res.json())
+    .then(() => {
+        alert('Job updated successfully!');
+        window.location = 'index.html';
+    })
+    .catch(err => console.log(err));
 }
 </script>

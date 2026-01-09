@@ -1,43 +1,82 @@
 <h2>Create Job</h2>
 
 <form id="jobForm">
-<input placeholder="Title" id="title"><br><br>
+  <input placeholder="Title" id="title"><br><br>
 
-<select id="type">
-<option>Full Time</option>
-<option>Part Time</option>
-<option>Internship</option>
-</select><br><br>
+  <select id="type">
+    <option value="">Select Type</option>
+    <option value="Full Time">Full Time</option>
+    <option value="Part Time">Part Time</option>
+    <option value="Internship">Internship</option>
+  </select><br><br>
 
-<select id="status">
-<option>Active</option>
-<option>Expired</option>
-<option>Draft</option>
-</select><br><br>
+  <select id="status">
+    <option value="">Select Status</option>
+    <option value="Active">Active</option>
+    <option value="Expired">Expired</option>
+    <option value="Draft">Draft</option>
+  </select><br><br>
 
-<input placeholder="Applications" id="applications"><br><br>
-<input placeholder="Duration" id="duration"><br><br>
+  <input type="number" placeholder="Applications" id="applications"><br><br>
+  <input placeholder="Duration" id="duration"><br><br>
+  <textarea placeholder="Description" id="description"></textarea><br><br>
 
-<textarea placeholder="Description" id="description"></textarea><br><br>
-
-<button type="submit">Save</button>
+  <button type="submit">Save</button>
+  <a href="index.html">Cancel</a>
 </form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <script>
 document.getElementById('jobForm').onsubmit = function(e){
   e.preventDefault();
 
-  fetch('http://localhost/job-dashboard-backend/public/api/jobs', {
+  const title = document.getElementById('title').value.trim();
+  const type = document.getElementById('type').value;
+  const status = document.getElementById('status').value;
+  const applications = document.getElementById('applications').value;
+  const duration = document.getElementById('duration').value.trim();
+  const description = document.getElementById('description').value.trim();
+
+  if(title === ''){
+    alert('Please enter a title');
+    return;
+  }
+  if(type === ''){
+    alert('Please select a job type');
+    return;
+  }
+  if(status === ''){
+    alert('Please select a status');
+    return;
+  }
+  if(applications === '' || isNaN(applications) || parseInt(applications) < 0){
+    alert('Please enter a valid number of applications');
+    return;
+  }
+  if(duration === ''){
+    alert('Please enter duration');
+    return;
+  }
+
+
+  fetch('http://127.0.0.1:8000/api/jobs', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({
-      title: title.value,
-      type: type.value,
-      status: status.value,
-      applications: applications.value,
-      duration: duration.value,
-      description: description.value
+      title: title,
+      type: type,
+      status: status,
+      applications: parseInt(applications),
+      duration: duration,
+      description: description
     })
-  }).then(()=>window.location='index.html');
+  })
+  .then(res => res.json())
+  .then(() => {
+        alert('Job created successfully!');
+        window.location = 'index.html';
+    })
+  .catch(err => console.log(err));
 }
 </script>
